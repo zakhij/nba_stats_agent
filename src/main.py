@@ -1,25 +1,24 @@
 import os
-
 from dotenv import load_dotenv
-import anthropic
+import logging
+from src.claude_testing import ClaudeClient
 
 load_dotenv()
 
+_logger = logging.getLogger(__name__)
 
-def get_claude_response():
-    client = anthropic.Anthropic(
-        api_key=os.getenv("ANTHROPIC_API_KEY"),
+
+def main() -> None:
+    # logging.basicConfig(level=logging.DEBUG)
+    load_dotenv()
+
+    api_key = os.getenv("ANTHROPIC_API_KEY") or ""
+
+    claude_client = ClaudeClient(api_key)
+    ex = claude_client.chat_with_claude(
+        "How are you? I'm trying to sum 383929 with 12222 but can't find the answer.",
     )
-    message = client.messages.create(
-        model="claude-3-5-sonnet-20241022",
-        max_tokens=1024,
-        messages=[{"role": "user", "content": "Hello, Claude"}],
-    )
-    print(message.content)
-
-
-def main():
-    get_claude_response()
+    print(ex)
 
 
 if __name__ == "__main__":
