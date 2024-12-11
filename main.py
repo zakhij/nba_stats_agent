@@ -34,7 +34,6 @@ def get_claude_response(prompt: str, model: str = "claude-3-sonnet-20240229") ->
         return f"Error: {str(e)}"
 
 
-# Example usage
 if __name__ == "__main__":
     test_prompt = (
         "Are you familiar with DX, software engineering intelligence? The company"
