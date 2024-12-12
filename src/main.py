@@ -15,10 +15,8 @@ def main() -> None:
     api_key = os.getenv("ANTHROPIC_API_KEY") or ""
 
     claude_client = ClaudeClient(api_key)
-    ex = claude_client.chat_with_claude(
-        "How are you? I'm trying to sum 383929 with 12222 but can't find the answer.",
-    )
-    print(ex)
+    ex = claude_client.chat_with_claude("What bball games are on today?")
+    print(f"\n FINAL RESPONSE: {ex}")
 
 
 if __name__ == "__main__":

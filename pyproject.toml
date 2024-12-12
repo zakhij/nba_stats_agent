@@ -9,6 +9,7 @@ packages = [{include = "src"}]
 python = "^3.12"
 anthropic = "^0.40.0"
 python-dotenv = "^1.0.0"
+nba_api = '^1.6.1'
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
