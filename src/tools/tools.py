@@ -1,7 +1,3 @@
-def add_two_integers(integer1: int, integer2: int) -> str:
-    return f"{integer1 + integer2}"
-
-
 from nba_api.live.nba.endpoints import scoreboard
 from nba_api.stats.static import players
 from nba_api.stats.endpoints import playercareerstats
@@ -22,3 +18,7 @@ def get_player_id(player_name: str) -> str:
 def get_player_stats(player_id: str) -> str:
     career = playercareerstats.PlayerCareerStats(player_id=player_id)
     return career.get_json()
+
+
+def mock_tweet(tweet_text: str) -> None:
+    print(f"MOCK TWEET: {tweet_text}")

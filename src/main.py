@@ -15,7 +15,8 @@ def main() -> None:
     api_key = os.getenv("ANTHROPIC_API_KEY") or ""
 
     claude_client = ClaudeClient(api_key)
-    ex = claude_client.chat_with_claude("What bball games are on today?")
+    ask = input("Ask the LLM: ")
+    ex = claude_client.chat_with_claude(ask)
     print(f"\n FINAL RESPONSE: {ex}")
 
 
