@@ -7,23 +7,39 @@ import nba_api
 
 load_dotenv()
 
-_logger = logging.getLogger(__name__)
+
+def setup_logging():
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+
+    # Quiet down external libraries
+    logging.getLogger("httpx").setLevel(logging.WARNING)
+    logging.getLogger("anthropic").setLevel(logging.WARNING)
 
 
 def main() -> None:
-    # logging.basicConfig(level=logging.DEBUG)
-    load_dotenv()
+    setup_logging()
+    _logger = logging.getLogger(__name__)
 
+    load_dotenv()
     api_key = os.getenv("ANTHROPIC_API_KEY") or ""
 
+    if not api_key:
+        _logger.error("No API key found in environment variables")
+        return
+
     claude_client = ClaudeClient(api_key)
+    _logger.info("Claude client initialized successfully")
 
     while True:
         ask = input("Ask the LLM: ")
         if ask == "exit":
+            _logger.info("Exiting application")
             break
-        ex = claude_client.chat_with_claude(ask)
-        print(f"\n FINAL RESPONSE: {ex}\n")
+        claude_client.chat_with_claude(ask)
 
 
 if __name__ == "__main__":
