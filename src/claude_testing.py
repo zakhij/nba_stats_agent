@@ -1,12 +1,6 @@
 import anthropic
 
-from src.tools.tools import (
-    add_two_integers,
-    get_scoreboard,
-    get_player_id,
-    get_player_stats,
-    mock_tweet,
-)
+from src.tools.tools import get_player_id, get_player_stats, mock_tweet
 from src.tools.tool_schema import tools
 
 
@@ -15,11 +9,7 @@ class ClaudeClient:
         self.client = anthropic.Anthropic(api_key=api_key)
 
     def process_tool_call(self, tool_name, tool_input):
-        if tool_name == "add_two_integers":
-            return add_two_integers(tool_input["integer1"], tool_input["integer2"])
-        elif tool_name == "get_scoreboard":
-            return get_scoreboard()
-        elif tool_name == "get_player_id":
+        if tool_name == "get_player_id":
             return get_player_id(tool_input["player_name"])
         elif tool_name == "get_player_stats":
             return get_player_stats(tool_input["player_id"])

@@ -1,13 +1,5 @@
-from nba_api.live.nba.endpoints import scoreboard
 from nba_api.stats.static import players
 from nba_api.stats.endpoints import playercareerstats
-
-
-def get_scoreboard() -> str:
-    # Today's Score Board
-    games = scoreboard.ScoreBoard()
-
-    return games.get_json()
 
 
 def get_player_id(player_name: str) -> str:
