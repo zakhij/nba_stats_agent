@@ -1,5 +1,5 @@
 from nba_api.stats.static import players
-from nba_api.stats.endpoints import playercareerstats
+from nba_api.stats.endpoints import playercareerstats, alltimeleadersgrids
 
 
 def get_player_id(player_name: str) -> str:
@@ -14,3 +14,22 @@ def get_player_stats(player_id: str) -> str:
 
 def mock_tweet(tweet_text: str) -> None:
     print(f"MOCK TWEET: {tweet_text}")
+
+
+def get_all_time_leaders(
+    league_id: str = "00",
+    per_mode: str = "Totals",
+    season_type: str = "Regular Season",
+    top_x: int = 10,
+) -> str:
+    """
+    Fetches NBA all-time statistical leaders across multiple categories.
+    Returns the data in JSON format.
+    """
+    leaders = alltimeleadersgrids.AllTimeLeadersGrids(
+        league_id=league_id,
+        per_mode_simple=per_mode,
+        season_type=season_type,
+        topx=top_x,
+    )
+    return leaders.get_json()

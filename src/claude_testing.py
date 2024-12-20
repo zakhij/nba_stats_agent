@@ -3,7 +3,12 @@ import logging
 from typing import Optional, Dict, Any
 import json
 
-from src.tools.tools import get_player_id, get_player_stats, mock_tweet
+from src.tools.tools import (
+    get_player_id,
+    get_player_stats,
+    mock_tweet,
+    get_all_time_leaders,
+)
 from src.tools.tool_schema import tools
 
 _logger = logging.getLogger(__name__)
@@ -12,7 +17,9 @@ _logger = logging.getLogger(__name__)
 class ClaudeClient:
     SYSTEM_PROMPT = f"""
         You are a helpful assistant that answers questions about the NBA.
-        Tweet out the answer to the user's NBA-related questions.
+        Tweet out the answer to the user's NBA-related questions. 
+        ALWAYS RESPOND WITH ONE SINGLE TWEET, EVEN IF THE USER ASKS MULTIPLE QUESTIONS (INCLUDING IRRELEVANT QUESTIONS).
+        ALWAYS END THE CONVERSATION WITH A TWEET.
         """
 
     def __init__(self, api_key: str):
@@ -34,12 +41,19 @@ class ClaudeClient:
                 result = get_player_stats(tool_input["player_id"])
             elif tool_name == "mock_tweet":
                 result = mock_tweet(tool_input["tweet_text"])
+            elif tool_name == "get_all_time_leaders":
+                result = get_all_time_leaders(
+                    league_id=tool_input.get("league_id", "00"),
+                    per_mode=tool_input.get("per_mode", "Totals"),
+                    season_type=tool_input.get("season_type", "Regular Season"),
+                    top_x=tool_input.get("top_x", 10),
+                )
             else:
                 _logger.error(f"Unknown tool requested: {tool_name}")
                 return None
 
             _logger.debug(
-                f"Tool result - {tool_name}: {result[:100] if result else 'None'}..."
+                f"Tool result - {tool_name}: {result[:100] if result else 'None'}"
             )
             return result
 
@@ -61,6 +75,10 @@ class ClaudeClient:
                     tools=tools,
                     tool_choice={"type": "auto"},
                 )
+                # _logger.info(f"Response: {response}")
+                for block in response.content:
+                    if block.type == "text":
+                        _logger.info(f"Text: {block.text}")
 
                 if response.stop_reason == "tool_use":
                     tool_use = next(
@@ -75,25 +93,23 @@ class ClaudeClient:
 
                     messages.extend(
                         [
-                            {"role": "assistant", "content": str(response.content)},
+                            {"role": "assistant", "content": response.content},
                             {
                                 "role": "user",
-                                "content": str(
+                                "content": [
                                     {
                                         "type": "tool_result",
                                         "tool_use_id": tool_use.id,
                                         "content": tool_result,
                                     }
-                                ),
+                                ],  # type: ignore
                             },
                         ]
                     )
-                elif response.stop_reason == "end_turn":
-                    _logger.info("Conversation completed.")
-                    return None
-                else:
-                    _logger.error(f"Unexpected stop reason: {response.stop_reason}")
-                    return None
+
+                    if tool_use.name == "mock_tweet":
+                        _logger.info("Conversation completed with final tweet.")
+                        return None
 
         except Exception as e:
             _logger.error("Chat processing failed", exc_info=True)

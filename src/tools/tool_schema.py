@@ -41,4 +41,36 @@ tools = [
             "required": ["tweet_text"],
         },
     },
+    {
+        "name": "get_all_time_leaders",
+        "description": "Gets NBA all-time statistical leaders across multiple categories (points, assists, rebounds, etc). Returns top X players for each stat category.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "league_id": {
+                    "type": "string",
+                    "description": "NBA League ID (00 for NBA)",
+                    "default": "00",
+                },
+                "per_mode": {
+                    "type": "string",
+                    "description": "How stats are represented (Totals or PerGame)",
+                    "enum": ["Totals", "PerGame"],
+                    "default": "Totals",
+                },
+                "season_type": {
+                    "type": "string",
+                    "description": "Type of season stats to retrieve",
+                    "enum": ["Regular Season", "Playoffs", "All Star"],
+                    "default": "Regular Season",
+                },
+                "top_x": {
+                    "type": "integer",
+                    "description": "Number of top players to return (e.g., top 10)",
+                    "default": 10,
+                },
+            },
+            "required": ["league_id", "per_mode", "season_type", "top_x"],
+        },
+    },
 ]
