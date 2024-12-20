@@ -39,7 +39,7 @@ def main() -> None:
         if ask == "exit":
             _logger.info("Exiting application")
             break
-        claude_client.chat_with_claude(ask)
+        claude_client.chat_with_claude_any(ask)
 
 
 if __name__ == "__main__":

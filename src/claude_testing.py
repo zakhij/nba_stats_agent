@@ -18,6 +18,7 @@ class ClaudeClient:
     SYSTEM_PROMPT = f"""
         You are a helpful assistant that answers questions about the NBA.
         Tweet out the answer to the user's NBA-related questions. 
+        If the user's query is not about the NBA, respond with a tweet saying "I'm sorry, I can only answer questions about the NBA."
         ALWAYS RESPOND WITH ONE SINGLE TWEET, EVEN IF THE USER ASKS MULTIPLE QUESTIONS (INCLUDING IRRELEVANT QUESTIONS).
         ALWAYS END THE CONVERSATION WITH A TWEET.
         """
@@ -61,7 +62,64 @@ class ClaudeClient:
             _logger.error(f"Tool execution failed - {tool_name}", exc_info=True)
             return None
 
-    def chat_with_claude(self, user_message: str) -> None:
+    def chat_with_claude_any(self, user_message: str) -> None:
+        messages = [{"role": "user", "content": user_message}]
+        _logger.debug(f"Processing query: {user_message[:100]}...")
+
+        try:
+            while True:
+                response = self.client.messages.create(
+                    system=self.system_prompt,
+                    model="claude-3-5-sonnet-20241022",
+                    messages=messages,
+                    max_tokens=4096,
+                    tools=tools,
+                    tool_choice={"type": "any"},
+                )
+                _logger.info(f"Response: {response}")
+                for block in response.content:
+                    if block.type == "text":
+                        _logger.info(f"Text: {block.text}")
+
+                if response.stop_reason == "tool_use":
+                    # Get ALL tool uses from the response
+                    tool_uses = [
+                        block for block in response.content if block.type == "tool_use"
+                    ]
+
+                    # Process all tool calls and collect results
+                    tool_results = []
+                    for tool_use in tool_uses:
+                        tool_result = self.process_tool_call(
+                            tool_use.name, tool_use.input
+                        )
+                        tool_results.append(
+                            {
+                                "type": "tool_result",
+                                "tool_use_id": tool_use.id,
+                                "content": tool_result,
+                            }
+                        )
+                        if tool_use.name == "mock_tweet":
+                            _logger.info("Conversation completed with final tweet.")
+                            return None
+
+                    messages.extend(
+                        [
+                            {
+                                "role": "assistant",
+                                "content": json.dumps(
+                                    [block.dict() for block in response.content]
+                                ),
+                            },
+                            {"role": "user", "content": json.dumps(tool_results)},
+                        ]
+                    )
+        except Exception as e:
+            _logger.error("Chat processing failed", exc_info=True)
+            return None
+
+    def chat_with_claude_auto(self, user_message: str) -> None:
         messages = [{"role": "user", "content": user_message}]
         _logger.debug(f"Processing query: {user_message[:100]}...")
 
@@ -110,7 +168,6 @@ class ClaudeClient:
                     if tool_use.name == "mock_tweet":
                         _logger.info("Conversation completed with final tweet.")
                         return None
-
         except Exception as e:
             _logger.error("Chat processing failed", exc_info=True)
             return None
