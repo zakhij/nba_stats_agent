@@ -15,6 +15,7 @@ class NBAAgent:
     ALWAYS RESPOND WITH ONE SINGLE TWEET, EVEN IF THE USER ASKS MULTIPLE QUESTIONS (INCLUDING IRRELEVANT QUESTIONS).
     ALWAYS END THE CONVERSATION WITH A TWEET.
     """
+    MAX_TURNS = 6
 
     def __init__(self, claude_service: ClaudeService, tool_manager: ToolManager):
         self.claude_service = claude_service
@@ -25,8 +26,17 @@ class NBAAgent:
         messages = [{"role": "user", "content": user_message}]
         _logger.debug(f"Processing query: {user_message[:100]}...")
 
+        turn_count = 0
         try:
             while True:
+                turn_count += 1
+                if turn_count > self.MAX_TURNS:
+                    _logger.warning(
+                        "Conversation exceeded max turns. Ending conversation."
+                    )
+                    return
+
+                _logger.debug(f"Turn {turn_count}")
                 response = self.claude_service.create_message(
                     system_prompt=self.system_prompt,
                     messages=messages,
