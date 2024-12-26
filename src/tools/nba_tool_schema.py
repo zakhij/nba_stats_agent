@@ -1,18 +1,4 @@
-tools = [
-    {
-        "name": "mock_tweet",
-        "description": "A tool that mocks tweets a given text.",
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "tweet_text": {
-                    "type": "string",
-                    "description": "The text to mock tweet.",
-                }
-            },
-            "required": ["tweet_text"],
-        },
-    },
+nba_tools = [
     {
         "name": "get_player_id",
         "description": "A tool that gets the player id for a given NBA player, which is used to get the player stats.",
@@ -93,11 +79,11 @@ tools = [
                     "enum": ["Regular Season", "Playoffs", "All Star", "Pre Season"],
                     "default": "Regular Season",
                 },
-                "per_mode": {
+                "per_mode48": {
                     "type": "string",
                     "description": "How to display statistics (PerGame or Totals)",
                     "enum": ["PerGame", "Totals"],
-                    "default": "PerGame",
+                    "default": "Totals",
                 },
             },
             "required": ["stat_category"],
@@ -115,7 +101,7 @@ tools = [
                     "description": "Number of recent games to return",
                 },
             },
-            "required": ["player_id"],
+            "required": ["player_id", "last_n_games"],
         },
     },
     {

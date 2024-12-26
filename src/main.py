@@ -7,16 +7,17 @@ load_dotenv()
 from src.services.claude_service import ClaudeService
 from src.services.tool_manager import ToolManager
 from src.agents.nba_agent import NBAAgent
-from src.tools.tools import (
+from src.tools.nba_tools import (
     get_player_id,
     get_player_stats,
-    mock_tweet,
     get_all_time_leaders,
     get_league_leaders,
     get_player_recent_games,
     get_team_roster,
 )
-from src.tools.tool_schema import tools
+from src.tools.other_tools import mock_tweet
+from src.tools.nba_tool_schema import nba_tools
+from src.tools.other_tool_schema import other_tools
 
 
 def setup_logging():
@@ -42,16 +43,24 @@ def setup_tool_manager() -> ToolManager:
     tool_map = {
         "get_player_id": get_player_id,
         "get_player_stats": get_player_stats,
-        "mock_tweet": mock_tweet,
         "get_all_time_leaders": get_all_time_leaders,
         "get_league_leaders": get_league_leaders,
         "get_player_recent_games": get_player_recent_games,
         "get_team_roster": get_team_roster,
+        "mock_tweet": mock_tweet,
     }
 
-    for tool in tools:
-        if tool["name"] in tool_map:
-            tool_manager.register_tool(tool["name"], tool_map[tool["name"]], tool)
+    for nba_tool in nba_tools:
+        if nba_tool["name"] in tool_map:
+            tool_manager.register_tool(
+                nba_tool["name"], tool_map[nba_tool["name"]], nba_tool
+            )
+
+    for other_tool in other_tools:
+        if other_tool["name"] in tool_map:
+            tool_manager.register_tool(
+                other_tool["name"], tool_map[other_tool["name"]], other_tool
+            )
 
     return tool_manager
 
