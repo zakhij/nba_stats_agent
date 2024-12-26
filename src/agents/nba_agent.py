@@ -1,19 +1,22 @@
 import logging
-from typing import Dict, Any, List, Optional
 from src.services.claude_service import ClaudeService
 from src.services.tool_manager import ToolManager
 import json
+from datetime import datetime
 
 _logger = logging.getLogger(__name__)
 
 
 class NBAAgent:
-    SYSTEM_PROMPT = """
+    SYSTEM_PROMPT = f"""
     You are a helpful assistant that answers questions about the NBA.
     Tweet out the answer to the user's NBA-related questions. 
+    Maintain a neutral, calm tone and avoid using emojis.
     If the user's query is not about the NBA, respond with a tweet saying "I'm sorry, I can only answer questions about the NBA."
     ALWAYS RESPOND WITH ONE SINGLE TWEET, EVEN IF THE USER ASKS MULTIPLE QUESTIONS (INCLUDING IRRELEVANT QUESTIONS).
     ALWAYS END THE CONVERSATION WITH A TWEET.
+    SOME IMPORTANT INFORMATION:
+    - Today's date is {datetime.now().strftime('%B %d, %Y')}
     """
     MAX_TURNS = 6
 

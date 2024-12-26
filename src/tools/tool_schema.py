@@ -1,5 +1,19 @@
 tools = [
     {
+        "name": "mock_tweet",
+        "description": "A tool that mocks tweets a given text.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "tweet_text": {
+                    "type": "string",
+                    "description": "The text to mock tweet.",
+                }
+            },
+            "required": ["tweet_text"],
+        },
+    },
+    {
         "name": "get_player_id",
         "description": "A tool that gets the player id for a given NBA player, which is used to get the player stats.",
         "input_schema": {
@@ -7,7 +21,7 @@ tools = [
             "properties": {
                 "player_name": {
                     "type": "string",
-                    "description": "The name of the NBA player to get the id for.",
+                    "description": "NBA.com player ID",
                 }
             },
             "required": ["player_name"],
@@ -25,20 +39,6 @@ tools = [
                 }
             },
             "required": ["player_id"],
-        },
-    },
-    {
-        "name": "mock_tweet",
-        "description": "A tool that mocks tweets a given text.",
-        "input_schema": {
-            "type": "object",
-            "properties": {
-                "tweet_text": {
-                    "type": "string",
-                    "description": "The text to mock tweet.",
-                }
-            },
-            "required": ["tweet_text"],
         },
     },
     {
@@ -66,11 +66,71 @@ tools = [
                 },
                 "top_x": {
                     "type": "integer",
-                    "description": "Number of top players to return (e.g., top 10)",
-                    "default": 10,
+                    "description": "Number of top players to return",
                 },
             },
             "required": ["league_id", "per_mode", "season_type", "top_x"],
+        },
+    },
+    {
+        "name": "get_league_leaders",
+        "description": "Fetches NBA league leaders for a specific statistical category.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "stat_category": {
+                    "type": "string",
+                    "description": "Statistical category (PTS, AST, REB, STL, BLK)",
+                    "enum": ["PTS", "AST", "REB", "STL", "BLK"],
+                },
+                "season": {
+                    "type": "string",
+                    "description": "NBA season (e.g., '2024-25')",
+                },
+                "season_type_all_star": {
+                    "type": "string",
+                    "description": "Season type (Regular Season, Playoffs, All Star)",
+                    "enum": ["Regular Season", "Playoffs", "All Star", "Pre Season"],
+                    "default": "Regular Season",
+                },
+                "per_mode": {
+                    "type": "string",
+                    "description": "How to display statistics (PerGame or Totals)",
+                    "enum": ["PerGame", "Totals"],
+                    "default": "PerGame",
+                },
+            },
+            "required": ["stat_category"],
+        },
+    },
+    {
+        "name": "get_player_recent_games",
+        "description": "Fetches a player's recent game performances.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "player_id": {"type": "string", "description": "NBA.com player ID"},
+                "last_n_games": {
+                    "type": "integer",
+                    "description": "Number of recent games to return",
+                },
+            },
+            "required": ["player_id"],
+        },
+    },
+    {
+        "name": "get_team_roster",
+        "description": "Fetches the current roster for an NBA team.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "team_id": {"type": "string", "description": "NBA.com team ID"},
+                "season": {
+                    "type": "string",
+                    "description": "NBA season (e.g., '2024-25')",
+                },
+            },
+            "required": ["team_id"],
         },
     },
 ]

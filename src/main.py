@@ -12,6 +12,9 @@ from src.tools.tools import (
     get_player_stats,
     mock_tweet,
     get_all_time_leaders,
+    get_league_leaders,
+    get_player_recent_games,
+    get_team_roster,
 )
 from src.tools.tool_schema import tools
 
@@ -36,17 +39,19 @@ def setup_logging():
 def setup_tool_manager() -> ToolManager:
     tool_manager = ToolManager()
 
+    tool_map = {
+        "get_player_id": get_player_id,
+        "get_player_stats": get_player_stats,
+        "mock_tweet": mock_tweet,
+        "get_all_time_leaders": get_all_time_leaders,
+        "get_league_leaders": get_league_leaders,
+        "get_player_recent_games": get_player_recent_games,
+        "get_team_roster": get_team_roster,
+    }
+
     for tool in tools:
-        if tool["name"] == "get_player_id":
-            tool_manager.register_tool("get_player_id", get_player_id, tool)
-        elif tool["name"] == "get_player_stats":
-            tool_manager.register_tool("get_player_stats", get_player_stats, tool)
-        elif tool["name"] == "mock_tweet":
-            tool_manager.register_tool("mock_tweet", mock_tweet, tool)
-        elif tool["name"] == "get_all_time_leaders":
-            tool_manager.register_tool(
-                "get_all_time_leaders", get_all_time_leaders, tool
-            )
+        if tool["name"] in tool_map:
+            tool_manager.register_tool(tool["name"], tool_map[tool["name"]], tool)
 
     return tool_manager
 
