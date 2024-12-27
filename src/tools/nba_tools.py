@@ -26,7 +26,7 @@ def get_player_stats(player_id: str) -> str:
 def get_all_time_leaders(
     top_x: int,
     league_id: Optional[int] = None,
-    per_mode: Optional[str] = None,
+    per_mode_simple: Optional[str] = None,
     season_type: Optional[str] = None,
 ) -> str:
     """
@@ -39,8 +39,8 @@ def get_all_time_leaders(
     }
     if league_id is not None:
         kwargs["league_id"] = league_id
-    if per_mode is not None:
-        kwargs["per_mode"] = per_mode
+    if per_mode_simple is not None:
+        kwargs["per_mode_simple"] = per_mode_simple
     if season_type is not None:
         kwargs["season_type"] = season_type
 

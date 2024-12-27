@@ -32,7 +32,7 @@ params = {
         "enum": ["Regular Season", "Playoffs", "All Star"],
         "default": "Regular Season",
     },
-    "per_mode": {
+    "per_mode_simple": {
         "type": "string",
         "description": "How stats are represented (Totals or PerGame)",
         "enum": ["Totals", "PerGame"],

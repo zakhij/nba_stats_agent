@@ -28,11 +28,11 @@ nba_tools = [
             "type": "object",
             "properties": {
                 "league_id": params["league_id"],
-                "per_mode": params["per_mode"],
+                "per_mode_simple": params["per_mode_simple"],
                 "season_type": params["season_type"],
                 "top_x": params["top_x"],
             },
-            "required": ["league_id", "per_mode", "season_type", "top_x"],
+            "required": ["top_x"],
         },
     },
     {
