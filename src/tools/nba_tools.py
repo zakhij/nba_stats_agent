@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Optional
 
 from nba_api.stats.static import players
 from nba_api.stats.endpoints import (
@@ -81,12 +81,12 @@ def get_player_recent_games(player_id: int, last_n_games: int) -> str:
     return game_logs.get_json()
 
 
-def get_team_roster(team_id: str, season: Optional[str] = None) -> str:
+def get_team_roster(team_id: int, season: Optional[str] = None) -> str:
     """
     Fetches the current roster for an NBA team.
     Returns the data in JSON format.
     """
-    kwargs: dict[str, str] = {
+    kwargs: dict[str, int | str] = {
         "team_id": team_id,
     }
     if season is not None:

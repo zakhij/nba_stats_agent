@@ -1,3 +1,5 @@
+from src.tools.nba_parameters import params
+
 nba_tools = [
     {
         "name": "get_player_id",
@@ -5,10 +7,7 @@ nba_tools = [
         "input_schema": {
             "type": "object",
             "properties": {
-                "player_name": {
-                    "type": "string",
-                    "description": "NBA.com player ID",
-                }
+                "player_name": params["player_name"],
             },
             "required": ["player_name"],
         },
@@ -18,12 +17,7 @@ nba_tools = [
         "description": "A tool that gets the stats for a given NBA player.",
         "input_schema": {
             "type": "object",
-            "properties": {
-                "player_id": {
-                    "type": "string",
-                    "description": "The id of the NBA player to get stats for.",
-                }
-            },
+            "properties": {"player_id": params["player_id"]},
             "required": ["player_id"],
         },
     },
@@ -33,27 +27,10 @@ nba_tools = [
         "input_schema": {
             "type": "object",
             "properties": {
-                "league_id": {
-                    "type": "string",
-                    "description": "NBA League ID (00 for NBA)",
-                    "default": "00",
-                },
-                "per_mode": {
-                    "type": "string",
-                    "description": "How stats are represented (Totals or PerGame)",
-                    "enum": ["Totals", "PerGame"],
-                    "default": "Totals",
-                },
-                "season_type": {
-                    "type": "string",
-                    "description": "Type of season stats to retrieve",
-                    "enum": ["Regular Season", "Playoffs", "All Star"],
-                    "default": "Regular Season",
-                },
-                "top_x": {
-                    "type": "integer",
-                    "description": "Number of top players to return",
-                },
+                "league_id": params["league_id"],
+                "per_mode": params["per_mode"],
+                "season_type": params["season_type"],
+                "top_x": params["top_x"],
             },
             "required": ["league_id", "per_mode", "season_type", "top_x"],
         },
@@ -64,27 +41,10 @@ nba_tools = [
         "input_schema": {
             "type": "object",
             "properties": {
-                "stat_category": {
-                    "type": "string",
-                    "description": "Statistical category (PTS, AST, REB, STL, BLK)",
-                    "enum": ["PTS", "AST", "REB", "STL", "BLK"],
-                },
-                "season": {
-                    "type": "string",
-                    "description": "NBA season (e.g., '2024-25')",
-                },
-                "season_type_all_star": {
-                    "type": "string",
-                    "description": "Season type (Regular Season, Playoffs, All Star)",
-                    "enum": ["Regular Season", "Playoffs", "All Star", "Pre Season"],
-                    "default": "Regular Season",
-                },
-                "per_mode48": {
-                    "type": "string",
-                    "description": "How to display statistics (PerGame or Totals)",
-                    "enum": ["PerGame", "Totals"],
-                    "default": "Totals",
-                },
+                "stat_category": params["stat_category"],
+                "season": params["season"],
+                "season_type_all_star": params["season_type_all_star"],
+                "per_mode48": params["per_mode48"],
             },
             "required": ["stat_category"],
         },
@@ -95,11 +55,8 @@ nba_tools = [
         "input_schema": {
             "type": "object",
             "properties": {
-                "player_id": {"type": "string", "description": "NBA.com player ID"},
-                "last_n_games": {
-                    "type": "integer",
-                    "description": "Number of recent games to return",
-                },
+                "player_id": params["player_id"],
+                "last_n_games": params["last_n_games"],
             },
             "required": ["player_id", "last_n_games"],
         },
@@ -110,11 +67,8 @@ nba_tools = [
         "input_schema": {
             "type": "object",
             "properties": {
-                "team_id": {"type": "string", "description": "NBA.com team ID"},
-                "season": {
-                    "type": "string",
-                    "description": "NBA season (e.g., '2024-25')",
-                },
+                "team_id": params["team_id"],
+                "season": params["season"],
             },
             "required": ["team_id"],
         },
