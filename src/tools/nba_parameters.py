@@ -57,4 +57,17 @@ params = {
         "type": "integer",
         "description": "Number of recent games to return",
     },
+    "date_from": {
+        "type": "string",
+        "description": "Start date in format YYYY-MM-DD",
+    },
+    "date_to": {
+        "type": "string",
+        "description": "End date in format YYYY-MM-DD",
+    },
+    "game_id": {
+        "type": "string",
+        "description": "NBA.com game ID (10 digits)",
+        "pattern": "^\\d{10}$",
+    },
 }

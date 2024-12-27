@@ -73,4 +73,42 @@ nba_tools = [
             "required": ["team_id"],
         },
     },
+    {
+        "name": "get_league_standings",
+        "description": "Gets current NBA standings including conference rankings, win/loss records, and streaks.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "league_id": params["league_id"],
+                "season": params["season"],
+                "season_type": params["season_type"],
+            },
+            "required": ["league_id", "season", "season_type"],
+        },
+    },
+    {
+        "name": "get_team_game_logs",
+        "description": "Fetches detailed game logs for a team including basic stats and rankings.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "team_id": params["team_id"],
+                "date_from": params["date_from"],
+                "date_to": params["date_to"],
+                "season_type": params["season_type"],
+            },
+            "required": ["team_id"],
+        },
+    },
+    {
+        "name": "get_box_score_summary",
+        "description": "Gets comprehensive game summary including line scores, team stats, officials, and game info.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "game_id": params["game_id"],
+            },
+            "required": ["game_id"],
+        },
+    },
 ]

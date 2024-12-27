@@ -7,6 +7,9 @@ from nba_api.stats.endpoints import (
     leagueleaders,
     playergamelogs,
     commonteamroster,
+    leaguestandingsv3,
+    teamgamelogs,
+    boxscoresummaryv2,
 )
 
 
@@ -93,3 +96,54 @@ def get_team_roster(team_id: int, season: Optional[str] = None) -> str:
         kwargs["season"] = season
     roster = commonteamroster.CommonTeamRoster(**kwargs)
     return roster.get_json()
+
+
+def get_league_standings(
+    league_id: str,
+    season: str,
+    season_type: str,
+) -> str:
+    """
+    Gets current NBA standings including conference rankings and records.
+    Returns the data in JSON format.
+    """
+    standings = leaguestandingsv3.LeagueStandingsV3(
+        league_id=league_id,
+        season=season,
+        season_type=season_type,
+    )
+    return standings.get_json()
+
+
+def get_team_game_logs(
+    team_id: int,
+    date_from: Optional[str] = None,
+    date_to: Optional[str] = None,
+    season_type: Optional[str] = None,
+) -> str:
+    """
+    Fetches detailed game logs for a team including basic stats and rankings.
+    Returns the data in JSON format.
+    """
+    kwargs: dict[str, int | str] = {
+        "team_id_nullable": team_id,
+    }
+    if date_from is not None:
+        kwargs["date_from_nullable"] = date_from
+    if date_to is not None:
+        kwargs["date_to_nullable"] = date_to
+    if season_type is not None:
+        kwargs["season_type_nullable"] = season_type
+
+    logs = teamgamelogs.TeamGameLogs(**kwargs)
+    return logs.get_json()
+
+
+def get_box_score_summary(game_id: str) -> str:
+    """
+    Gets comprehensive game summary including line scores, team stats,
+    officials, and game info.
+    Returns the data in JSON format.
+    """
+    summary = boxscoresummaryv2.BoxScoreSummaryV2(game_id=game_id)
+    return summary.get_json()
