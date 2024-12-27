@@ -8,9 +8,9 @@ params = {
         "description": "NBA.com team ID",
     },
     "league_id": {
-        "type": "integer",
+        "type": "string",
         "description": "NBA League ID (00 for NBA)",
-        "default": 00,
+        "default": "00",
     },
     "season": {
         "type": "string",

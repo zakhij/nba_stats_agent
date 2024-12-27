@@ -14,6 +14,9 @@ from src.tools.nba_tools import (
     get_league_leaders,
     get_player_recent_games,
     get_team_roster,
+    get_league_standings,
+    get_team_game_logs,
+    get_box_score_summary,
 )
 from src.tools.other_tools import mock_tweet
 from src.tools.nba_tool_schema import nba_tools
@@ -47,6 +50,9 @@ def setup_tool_manager() -> ToolManager:
         "get_league_leaders": get_league_leaders,
         "get_player_recent_games": get_player_recent_games,
         "get_team_roster": get_team_roster,
+        "get_league_standings": get_league_standings,
+        "get_team_game_logs": get_team_game_logs,
+        "get_box_score_summary": get_box_score_summary,
         "mock_tweet": mock_tweet,
     }
 
