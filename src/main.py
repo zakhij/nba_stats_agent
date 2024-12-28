@@ -7,6 +7,7 @@ load_dotenv()
 from src.services.claude_service import ClaudeService
 from src.services.tool_manager import ToolManager
 from src.agents.nba_agent import NBAAgent
+from src.agents.tweeter_agent import TweeterAgent
 from src.tools.nba_tools import (
     get_player_id,
     get_player_stats,
@@ -54,7 +55,7 @@ def setup_tool_manager() -> ToolManager:
         "get_league_standings": get_league_standings,
         "get_team_game_logs": get_team_game_logs,
         "get_box_score_summary": get_box_score_summary,
-        # "mock_tweet": mock_tweet,
+        "mock_tweet": mock_tweet,
         "generate_final_response": generate_final_response,
     }
 
@@ -87,6 +88,7 @@ def main() -> None:
     claude_service = ClaudeService(api_key)
     tool_manager = setup_tool_manager()
     nba_agent = NBAAgent(claude_service, tool_manager)
+    tweeter_agent = TweeterAgent(claude_service, tool_manager)
 
     _logger.info("NBA agent initialized successfully")
 
@@ -95,7 +97,9 @@ def main() -> None:
         if ask == "exit":
             _logger.info("Exiting application")
             break
-        nba_agent.chat(ask, tool_choice_type="any")
+        answer = nba_agent.chat(ask, tool_choice_type="any")
+        if answer:
+            tweeter_agent.evaluate_and_tweet(ask, answer)
 
 
 if __name__ == "__main__":
