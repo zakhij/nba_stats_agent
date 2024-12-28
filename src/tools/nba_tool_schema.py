@@ -2,6 +2,30 @@ from src.tools.nba_parameters import params
 
 nba_tools = [
     {
+        "name": "generate_final_response",
+        "description": "A tool that generates the final response for the conversation.",
+        "input_schema": {
+            "type": "object",
+            "properties": {
+                "answer": {
+                    "type": "string",
+                    "description": "Your comprehensive answer",
+                },
+                "confidence": {
+                    "type": "string",
+                    "enum": ["high", "medium", "low"],
+                    "description": "Confidence level in the answer",
+                },
+                "data_sources": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": "List of tools used to gather this information",
+                },
+            },
+            "required": ["answer", "confidence", "data_sources"],
+        },
+    },
+    {
         "name": "get_player_id",
         "description": "A tool that gets the player id for a given NBA player, which is used to get the player stats.",
         "input_schema": {

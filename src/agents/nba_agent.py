@@ -3,6 +3,7 @@ from src.services.claude_service import ClaudeService
 from src.services.tool_manager import ToolManager
 import json
 from datetime import datetime
+from typing import Optional
 
 _logger = logging.getLogger(__name__)
 
@@ -25,7 +26,7 @@ class NBAAgent:
         self.tool_manager = tool_manager
         self.system_prompt = self.SYSTEM_PROMPT
 
-    def chat(self, user_message: str, tool_choice_type: str = "any") -> None:
+    def chat(self, user_message: str, tool_choice_type: str = "any") -> Optional[str]:
         messages = [{"role": "user", "content": user_message}]
         _logger.debug(f"Processing query: {user_message[:100]}...")
 
@@ -37,7 +38,7 @@ class NBAAgent:
                     _logger.warning(
                         "Conversation exceeded max turns. Ending conversation."
                     )
-                    return
+                    return None
 
                 _logger.debug(f"Turn {turn_count}")
                 response = self.claude_service.create_message(
@@ -52,28 +53,32 @@ class NBAAgent:
                         _logger.info(f"Text: {block.text}")
 
                 if response.stop_reason == "tool_use":
-                    conversation_complete = False
-                    if tool_choice_type == "any":
-                        conversation_complete = self._handle_multiple_tools(
-                            response, messages
-                        )
-                    else:
-                        conversation_complete = self._handle_single_tool(
-                            response, messages
-                        )
+                    conversation_continuing = (
+                        self._handle_multiple_tools(response, messages)
+                        if tool_choice_type == "any"
+                        else self._handle_single_tool(response, messages)
+                    )
 
-                    if conversation_complete:
-                        return
+                    tool_uses = [
+                        block for block in response.content if block.type == "tool_use"
+                    ]
+                    if any(
+                        tool.name == "generate_final_response" for tool in tool_uses
+                    ):
+                        return conversation_continuing
 
         except Exception as e:
             _logger.error("Chat processing failed", exc_info=True)
 
-    def _handle_multiple_tools(self, response, messages) -> bool:
+    def _handle_multiple_tools(self, response, messages) -> Optional[str]:
         tool_uses = [block for block in response.content if block.type == "tool_use"]
         tool_results = []
 
         for tool_use in tool_uses:
             tool_result = self.tool_manager.execute_tool(tool_use.name, tool_use.input)
+            if tool_use.name == "generate_final_response":
+                return tool_result
+
             tool_results.append(
                 {
                     "type": "tool_result",
@@ -81,10 +86,6 @@ class NBAAgent:
                     "content": tool_result,
                 }
             )
-
-            if tool_use.name == "mock_tweet":
-                _logger.info("Conversation completed with final tweet.")
-                return True
 
         messages.extend(
             [
@@ -95,11 +96,14 @@ class NBAAgent:
                 {"role": "user", "content": json.dumps(tool_results)},
             ]
         )
-        return False
 
-    def _handle_single_tool(self, response, messages) -> bool:
+    def _handle_single_tool(self, response, messages) -> Optional[str]:
         tool_use = next(block for block in response.content if block.type == "tool_use")
         tool_result = self.tool_manager.execute_tool(tool_use.name, tool_use.input)
+
+        if tool_use.name == "generate_final_response":
+            _logger.info("Conversation completed with final tweet.")
+            return tool_result
 
         messages.extend(
             [
@@ -116,8 +120,3 @@ class NBAAgent:
                 },
             ]
         )
-
-        if tool_use.name == "mock_tweet":
-            _logger.info("Conversation completed with final tweet.")
-            return True
-        return False

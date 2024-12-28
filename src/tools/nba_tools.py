@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List, Dict, Any
 
 from nba_api.stats.static import players
 from nba_api.stats.endpoints import (
@@ -11,6 +11,18 @@ from nba_api.stats.endpoints import (
     teamgamelogs,
     boxscoresummaryv2,
 )
+
+
+def generate_final_response(
+    answer: str, confidence: str, data_sources: List[str]
+) -> Dict[str, Any]:
+    """Special tool that signals the end of the conversation and stores the final response."""
+    final_response = {
+        "answer": answer,
+        "confidence": confidence,
+        "data_sources": data_sources,
+    }
+    return final_response
 
 
 def get_player_id(player_name: str) -> str:
