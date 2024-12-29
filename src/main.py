@@ -1,11 +1,11 @@
 import os
 from dotenv import load_dotenv
 import logging
+from typing import Dict, Callable, Tuple
 
 load_dotenv()
 
 from src.services.claude_service import ClaudeService
-from src.services.tool_manager import ToolManager
 from src.agents.nba_agent import NBAAgent
 from src.agents.tweeter_agent import TweeterAgent
 from src.tools.nba_tools import (
@@ -42,10 +42,8 @@ def setup_logging():
     app_logger.setLevel(logging.DEBUG)
 
 
-def setup_tool_manager() -> ToolManager:
-    tool_manager = ToolManager()
-
-    tool_map = {
+def define_tool_maps() -> Tuple[Dict[str, Callable], Dict[str, Callable]]:
+    nba_tool_map = {
         "get_player_id": get_player_id,
         "get_player_stats": get_player_stats,
         "get_all_time_leaders": get_all_time_leaders,
@@ -55,23 +53,14 @@ def setup_tool_manager() -> ToolManager:
         "get_league_standings": get_league_standings,
         "get_team_game_logs": get_team_game_logs,
         "get_box_score_summary": get_box_score_summary,
-        "mock_tweet": mock_tweet,
         "generate_final_response": generate_final_response,
     }
 
-    for nba_tool in nba_tools:
-        if nba_tool["name"] in tool_map:
-            tool_manager.register_tool(
-                nba_tool["name"], tool_map[nba_tool["name"]], nba_tool
-            )
+    tweeter_tool_map = {
+        "mock_tweet": mock_tweet,
+    }
 
-    for tweeter_tool in tweeter_tools:
-        if tweeter_tool["name"] in tool_map:
-            tool_manager.register_tool(
-                tweeter_tool["name"], tool_map[tweeter_tool["name"]], tweeter_tool
-            )
-
-    return tool_manager
+    return nba_tool_map, tweeter_tool_map
 
 
 def main() -> None:
@@ -85,12 +74,26 @@ def main() -> None:
         _logger.error("No API key found in environment variables")
         return
 
+    # Initialize service
     claude_service = ClaudeService(api_key)
-    tool_manager = setup_tool_manager()
-    nba_agent = NBAAgent(claude_service, tool_manager)
-    tweeter_agent = TweeterAgent(claude_service, tool_manager)
 
-    _logger.info("NBA agent initialized successfully")
+    # Define tool maps
+    nba_tool_map, tweeter_tool_map = define_tool_maps()
+
+    # Initialize agents with their specific tools
+    nba_agent = NBAAgent(
+        claude_service=claude_service,
+        tool_schemas=nba_tools,  # from nba_tool_schema
+        tool_map=nba_tool_map,
+    )
+
+    tweeter_agent = TweeterAgent(
+        claude_service=claude_service,
+        tool_schemas=tweeter_tools,  # from tweeter_tool_schema
+        tool_map=tweeter_tool_map,
+    )
+
+    _logger.info("Agents initialized successfully")
 
     while True:
         ask = input("Ask the LLM: ")

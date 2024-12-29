@@ -1,14 +1,12 @@
 import logging
-from src.services.claude_service import ClaudeService
-from src.services.tool_manager import ToolManager
-import json
 from datetime import datetime
 from typing import Optional
+from src.agents.base_agent import BaseAgent
 
 _logger = logging.getLogger(__name__)
 
 
-class NBAAgent:
+class NBAAgent(BaseAgent):
     SYSTEM_PROMPT = f"""
     You are a helpful assistant that answers questions about the NBA.
     Tweet out the answer to the user's NBA-related questions. 
@@ -20,11 +18,6 @@ class NBAAgent:
     - Today's date is {datetime.now().strftime('%B %d, %Y')}
     """
     MAX_TURNS = 6
-
-    def __init__(self, claude_service: ClaudeService, tool_manager: ToolManager):
-        self.claude_service = claude_service
-        self.tool_manager = tool_manager
-        self.system_prompt = self.SYSTEM_PROMPT
 
     def chat(self, user_message: str, tool_choice_type: str = "any") -> Optional[str]:
         messages = [{"role": "user", "content": user_message}]
@@ -40,11 +33,15 @@ class NBAAgent:
                     )
                     return None
 
+                if not self.get_tool_schemas():
+                    _logger.error("Tool schemas are not initialized")
+                    return None
+
                 _logger.debug(f"Turn {turn_count}")
                 response = self.claude_service.create_message(
-                    system_prompt=self.system_prompt,
+                    system_prompt=self.SYSTEM_PROMPT,
                     messages=messages,
-                    tools=self.tool_manager.get_tool_schemas(),
+                    tools=self.get_tool_schemas() or [],
                     tool_choice={"type": tool_choice_type},
                 )
 
@@ -69,13 +66,14 @@ class NBAAgent:
 
         except Exception as e:
             _logger.error("Chat processing failed", exc_info=True)
+            return None
 
     def _handle_multiple_tools(self, response, messages) -> Optional[str]:
         tool_uses = [block for block in response.content if block.type == "tool_use"]
         tool_results = []
 
         for tool_use in tool_uses:
-            tool_result = self.tool_manager.execute_tool(tool_use.name, tool_use.input)
+            tool_result = self.execute_tool(tool_use.name, tool_use.input)
             if tool_use.name == "generate_final_response":
                 return tool_result
 
@@ -91,15 +89,15 @@ class NBAAgent:
             [
                 {
                     "role": "assistant",
-                    "content": json.dumps([block.dict() for block in response.content]),
+                    "content": [block.dict() for block in response.content],
                 },
-                {"role": "user", "content": json.dumps(tool_results)},
+                {"role": "user", "content": tool_results},
             ]
         )
 
     def _handle_single_tool(self, response, messages) -> Optional[str]:
         tool_use = next(block for block in response.content if block.type == "tool_use")
-        tool_result = self.tool_manager.execute_tool(tool_use.name, tool_use.input)
+        tool_result = self.execute_tool(tool_use.name, tool_use.input)
 
         if tool_use.name == "generate_final_response":
             _logger.info("Conversation completed with final tweet.")
