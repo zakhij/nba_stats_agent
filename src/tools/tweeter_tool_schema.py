@@ -1,4 +1,4 @@
-other_tools = [
+tweeter_tools = [
     {
         "name": "mock_tweet",
         "description": "A tool that mocks tweets a given text.",
