@@ -19,7 +19,9 @@ class NBAAgent(BaseAgent):
     """
     MAX_TURNS = 6
 
-    def chat(self, user_message: str, tool_choice_type: str = "any") -> Optional[str]:
+    def get_nba_response(
+        self, user_message: str, tool_choice_type: str = "any"
+    ) -> Optional[str]:
         messages = [{"role": "user", "content": user_message}]
         _logger.debug(f"Processing query: {user_message[:100]}...")
 

@@ -74,7 +74,7 @@ def main() -> None:
         if ask == "exit":
             _logger.info("Exiting application")
             break
-        answer = nba_agent.chat(ask, tool_choice_type="any")
+        answer = nba_agent.get_nba_response(ask, tool_choice_type="any")
         if answer:
             tweeter_agent.evaluate_and_tweet(ask, answer)
 
