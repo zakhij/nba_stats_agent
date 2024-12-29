@@ -20,9 +20,9 @@ from src.tools.nba_tools import (
     get_box_score_summary,
     generate_final_response,
 )
-from src.tools.other_tools import mock_tweet
+from src.tools.tweeter_tools import mock_tweet
 from src.tools.nba_tool_schema import nba_tools
-from src.tools.other_tool_schema import other_tools
+from src.tools.tweeter_tool_schema import tweeter_tools
 
 
 def setup_logging():
@@ -65,10 +65,10 @@ def setup_tool_manager() -> ToolManager:
                 nba_tool["name"], tool_map[nba_tool["name"]], nba_tool
             )
 
-    for other_tool in other_tools:
-        if other_tool["name"] in tool_map:
+    for tweeter_tool in tweeter_tools:
+        if tweeter_tool["name"] in tool_map:
             tool_manager.register_tool(
-                other_tool["name"], tool_map[other_tool["name"]], other_tool
+                tweeter_tool["name"], tool_map[tweeter_tool["name"]], tweeter_tool
             )
 
     return tool_manager
