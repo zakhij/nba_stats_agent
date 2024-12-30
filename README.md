@@ -1,6 +1,10 @@
+12/30/24 UPDATE: Due to the limitations of using X API's insanely restrictive free tier (not even able to access mentions timeline!?), this project will be sunset. I would've considered upgrading to the Basic tier to make this work, but alas, it's $200/month. Thanks, Elon. Development will continue on a [Discord-based agent](https://github.com/zakhij/nba-stats-discord-agent) that won't have these API constraints.
+
+
 # NBA Twitter Agent 
 
 An agentic twitter bot that answers NBA-related statistical queries. Uses Anthropic's SDK to build agents empowered with tools related to the [NBA Stats API](https://github.com/swar/nba_api) and the [Twitter API](https://www.tweepy.org/).
+
 
 
 ## How it works (WIP)
