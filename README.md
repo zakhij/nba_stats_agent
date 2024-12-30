@@ -12,8 +12,8 @@ The project uses two main agents:
 
 ## Current Limitations
 
-- The `TweeterAgent` does not use the Twitter API. We perform a mock tweet (prints to console) for the time being.
 - The `NBAAgent` has access to a limited set of NBA Stats API endpoints as tools. Need to expand this to answer a wider range of questions.
+- Using a free tier of the [X API](https://developer.x.com/en), we can only read 100 tweets a month and write 500 tweets a month. Would need to upgrade to a paid tier to scale this.
 
 
 
