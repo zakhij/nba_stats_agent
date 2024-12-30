@@ -35,7 +35,16 @@ def setup_logging():
         datefmt="%Y-%m-%d %H:%M:%S",
     )
 
-    noisy_loggers = ["httpx", "anthropic", "urllib3", "requests", "httpcore"]
+    noisy_loggers = [
+        "httpx",
+        "anthropic",
+        "urllib3",
+        "requests",
+        "httpcore",
+        "requests_oauthlib",
+        "oauthlib",
+        "tweepy",
+    ]
 
     for logger_name in noisy_loggers:
         logging.getLogger(logger_name).propagate = False

@@ -55,28 +55,23 @@ class TweeterAgent(BaseAgent):
             }
         ]
 
-        try:
-            if not self.get_tool_schemas():
-                _logger.error("Tool schemas are not initialized")
-                return None
-
-            response = self.claude_service.create_message(
-                system_prompt=self.SYSTEM_PROMPT,
-                messages=messages,
-                tools=self.get_tool_schemas() or [],
-                tool_choice={"type": "any"},
-            )
-
-            if response.stop_reason == "tool_use":
-                tool_use = next(
-                    block for block in response.content if block.type == "tool_use"
-                )
-                tweet_content = self.execute_tool(tool_use.name, tool_use.input)
-
-                if mention_id:
-                    return self.reply_to_mention(mention_id, tweet_content or "")
-                return tweet_content
-
-        except Exception as e:
-            _logger.error("Error processing tweet.", exc_info=True)
+        if not self.get_tool_schemas():
+            _logger.error("Tool schemas are not initialized")
             return None
+
+        response = self.claude_service.create_message(
+            system_prompt=self.SYSTEM_PROMPT,
+            messages=messages,
+            tools=self.get_tool_schemas() or [],
+            tool_choice={"type": "any"},
+        )
+
+        if response.stop_reason == "tool_use":
+            tool_use = next(
+                block for block in response.content if block.type == "tool_use"
+            )
+            tweet_content = self.execute_tool(tool_use.name, tool_use.input)
+
+            if mention_id:
+                return self.reply_to_mention(mention_id, tweet_content or "")
+            return tweet_content
